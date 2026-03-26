@@ -1,32 +1,51 @@
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000"; // FastAPI backend URL
+const API = axios.create({
+    baseURL: "http://127.0.0.1:8000",
+});
+
+
+// Automatically attach token to every request
+API.interceptors.request.use((req) => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+        req.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return req;
+});
+
+
+// ---------------- AUTH ----------------
 
 export const registerUser = async (userData) => {
-    return await axios.post(`${API_URL}/register`, userData);
+    return await API.post("/register", userData);
 };
 
 export const loginUser = async (loginData) => {
-    return await axios.post(`${API_URL}/login`, loginData);
+    return await API.post("/login", loginData);
 };
 
-export const getArticles = async (token) => {
-    return await axios.get(`${API_URL}/articles`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+
+// ---------------- ARTICLES ----------------
+
+export const getArticles = async () => {
+    return await API.get("/articles");
 };
 
-export const createArticle = async (data, token) => {
-    return await axios.post(`http://127.0.0.1:8000/articles`, data, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+export const createArticle = async (data) => {
+    return await API.post("/articles", data);
 };
 
-export const getNews = async (category = "technology") => {
+
+// ---------------- NEWS ----------------
+
+export const getNews = async (category = "technology", search = "") => {
     try {
-        const response = await axios.get(`${API_URL}/news?category=${category}`);
+        const response = await API.get(
+            `/news?category=${category}&search=${search}`
+        );
         return response.data;
     } catch (error) {
         console.error("Error fetching news:", error);

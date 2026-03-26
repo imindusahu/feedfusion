@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getNews } from "../services/api";
 
 function Dashboard() {
@@ -58,7 +58,7 @@ function Dashboard() {
 
             {/* 📂 Categories */}
             <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                {["technology", "business", "sports", "health"].map((cat) => (
+                {["Technology", "Business", "Sports", "Health"].map((cat) => (
                     <button
                         key={cat}
                         onClick={() => setCategory(cat)}
