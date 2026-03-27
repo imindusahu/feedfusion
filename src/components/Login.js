@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { loginUser } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [form, setForm] = useState({ username: "", password: "" });
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -14,6 +16,7 @@ const Login = () => {
             const res = await loginUser(form);
             localStorage.setItem("token", res.data.access_token);
             alert("Login successful!");
+            navigate("/dashboard");
         } catch (err) {
             alert(err.response.data.detail || "Login failed");
         }
