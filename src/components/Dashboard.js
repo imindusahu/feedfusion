@@ -7,10 +7,19 @@ function Dashboard() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);
 
+    // 🔥 Fetch function
     const fetchArticles = useCallback(async () => {
         setLoading(true);
 
-        const data = await getNews(category, search);
+        let data;
+
+        if (search.trim()) {
+            // 🔍 Search mode → category ignore
+            data = await getNews("", search);
+        } else {
+            // 📂 Category mode
+            data = await getNews(category.toLowerCase(), "");
+        }
 
         setArticles(data || []);
         setLoading(false);
@@ -20,118 +29,145 @@ function Dashboard() {
         fetchArticles();
     }, [fetchArticles]);
 
-
     return (
-        <div style={{ padding: "20px", fontFamily: "Arial" }}>
-            <h1 style={{ textAlign: "center" }}>📰 Smart News Dashboard</h1>
+        <div style={{ background: "#f5f5f5", minHeight: "100vh", padding: "30px" }}>
 
-            {/* 🔍 Search */}
-            <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                <input
-                    type="text"
-                    placeholder="Search news..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    style={{
-                        padding: "10px",
-                        width: "300px",
-                        borderRadius: "8px",
-                        border: "1px solid gray",
-                    }}
-                />
-
-                <button
-                    onClick={fetchArticles}
-                    style={{
-                        marginLeft: "10px",
-                        padding: "10px 15px",
-                        borderRadius: "8px",
-                        backgroundColor: "#007bff",
-                        color: "white",
-                        border: "none",
-                        cursor: "pointer",
-                    }}
-                >
-                    Search
-                </button>
-            </div>
-
-            {/* 📂 Categories */}
-            <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                {["Technology", "Business", "Sports", "Health"].map((cat) => (
-                    <button
-                        key={cat}
-                        onClick={() => setCategory(cat)}
-                        style={{
-                            margin: "5px",
-                            padding: "8px 12px",
-                            borderRadius: "6px",
-                            border: "none",
-                            backgroundColor: category === cat ? "#28a745" : "#ddd",
-                            color: category === cat ? "white" : "black",
-                            cursor: "pointer",
-                        }}
-                    >
-                        {cat}
-                    </button>
-                ))}
-            </div>
-
-            {/* 📰 News Grid */}
+            {/* 🔥 Main Container */}
             <div
                 style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-                    gap: "20px",
+                    maxWidth: "1200px",
+                    margin: "auto",
+                    background: "white",
+                    padding: "20px",
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)"
                 }}
             >
-                {loading && (
-                    <p style={{ textAlign: "center", fontSize: "18px" }}>
-                        Loading news...</p>
-                )}
 
+                {/* 📰 Header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <h2>Latest Articles</h2>
 
-                {articles.map((item, index) => (
-                    <div
-                        key={index}
-                        style={{
-                            border: "1px solid #ddd",
-                            borderRadius: "10px",
-                            padding: "15px",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                        }}
-                    >
-                        {item.image && (
-                            <img
-                                src={item.image}
-                                alt="news"
-                                style={{
-                                    width: "100%",
-                                    height: "180px",
-                                    objectFit: "cover",
-                                    borderRadius: "8px",
-                                }}
-                            />
-                        )}
-
-                        <h3 style={{ marginTop: "10px" }}>{item.title}</h3>
-                        <p>{item.description}</p>
-
-                        <a
-                            href={item.url}
-                            target="_blank"
-                            rel="noreferrer"
+                    {/* 🔍 Search Bar */}
+                    <div>
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                             style={{
-                                display: "inline-block",
-                                marginTop: "10px",
-                                color: "#007bff",
-                                textDecoration: "none",
+                                padding: "8px",
+                                borderRadius: "6px",
+                                border: "1px solid #ccc",
+                                marginRight: "10px"
+                            }}
+                        />
+                        <button
+                            onClick={fetchArticles}
+                            style={{
+                                padding: "8px 12px",
+                                borderRadius: "6px",
+                                background: "#f4a742",
+                                border: "none",
+                                color: "white",
+                                cursor: "pointer"
                             }}
                         >
-                            Read More →
-                        </a>
+                            Search
+                        </button>
                     </div>
-                ))}
+                </div>
+
+                {/* 📂 Categories */}
+                <div style={{ marginTop: "15px" }}>
+                    {["all", "technology", "business", "health", "sports"].map((cat) => (
+                        <button
+                            key={cat}
+                            onClick={() => {
+                                setCategory(cat);
+                                setSearch(""); // 🔥 search clear on category click
+                            }}
+                            style={{
+                                marginRight: "10px",
+                                padding: "6px 12px",
+                                borderRadius: "20px",
+                                border: "none",
+                                cursor: "pointer",
+                                background: category === cat ? "#f4a742" : "#eee",
+                                color: category === cat ? "white" : "black"
+                            }}
+                        >
+                            {cat.toUpperCase()}
+                        </button>
+                    ))}
+                </div>
+
+                {/* 📰 Grid */}
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                        gap: "20px",
+                        marginTop: "20px"
+                    }}
+                >
+
+                    {/* ⏳ Loading */}
+                    {loading && <p>Loading...</p>}
+
+                    {/* ❌ No Data */}
+                    {!loading && articles.length === 0 && (
+                        <p>No articles found</p>
+                    )}
+
+                    {/* 📰 Cards */}
+                    {articles.map((item, index) => (
+                        <div
+                            key={index}
+                            style={{
+                                borderRadius: "12px",
+                                overflow: "hidden",
+                                boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                                transition: "0.3s",
+                                background: "#fff"
+                            }}
+                        >
+                            {/* 🖼 Image */}
+                            {item.image && (
+                                <img
+                                    src={item.image}
+                                    alt="news"
+                                    style={{
+                                        width: "100%",
+                                        height: "180px",
+                                        objectFit: "cover"
+                                    }}
+                                />
+                            )}
+
+                            {/* 📄 Content */}
+                            <div style={{ padding: "15px" }}>
+                                <h3>{item.title}</h3>
+                                <p style={{ fontSize: "14px", color: "#555" }}>
+                                    {item.description}
+                                </p>
+
+                                <a
+                                    href={item.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    style={{
+                                        color: "#f4a742",
+                                        textDecoration: "none",
+                                        fontWeight: "bold"
+                                    }}
+                                >
+                                    Read More →
+                                </a>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

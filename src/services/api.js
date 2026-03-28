@@ -41,11 +41,14 @@ export const createArticle = async (data) => {
 
 // ---------------- NEWS ----------------
 
-export const getNews = async (category = "technology", search = "") => {
+export const getNews = async (category = "", search = "") => {
     try {
-        const response = await API.get(
-            `/news?category=${category}&search=${search}`
-        );
+        const response = await API.get("/news", {
+            params: {
+                category,
+                search: search
+            }
+        });
         return response.data;
     } catch (error) {
         console.error("Error fetching news:", error);

@@ -7,39 +7,45 @@ const Navbar = () => {
 
     const handleLogout = () => {
         logout();
-        alert("Logged out successfully");
         navigate("/login");
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
-            <div className="container">
-                <Link className="navbar-brand" to="/">Smart Aggregator</Link>
+        <nav style={{
+            background: "#281616",
+            color: "white",
+            padding: "15px",
+            boxShadow: "0 2px 10px rgba(228, 219, 219, 0.1)"
+        }}>
+            <div style={{
+                maxWidth: "1200px",
+                margin: "auto",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+            }}>
+                <h3>SMART AGGREGATOR</h3>
 
-                <div className="collapse navbar-collapse">
-                    <ul className="navbar-nav ms-auto">
-
-                        {isLoggedIn ? (
-                            <li className="nav-item">
-                                <button
-                                    className="btn btn-danger"
-                                    onClick={handleLogout}
-                                >
-                                    Logout
-                                </button>
-                            </li>
-                        ) : (
-                            <>
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/login">Login</Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/register">Register</Link>
-                                </li>
-                            </>
-                        )}
-
-                    </ul>
+                <div>
+                    {isLoggedIn ? (
+                        <button
+                            onClick={handleLogout}
+                            style={{
+                                padding: "8px 12px",
+                                background: "red",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "6px"
+                            }}
+                        >
+                            Logout
+                        </button>
+                    ) : (
+                        <>
+                            <Link to="/login" style={{ marginRight: "10px" }}>Login</Link>
+                            <Link to="/register">Register</Link>
+                        </>
+                    )}
                 </div>
             </div>
         </nav>
