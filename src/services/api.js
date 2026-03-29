@@ -43,11 +43,27 @@ export const loginUser = async (loginData) => {
 // ---------------- ARTICLES ----------------
 
 export const getArticles = async () => {
-    return await API.get("/articles");
+    try {
+        const response = await API.get("/articles");
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching news:", error);
+        return [];
+    }
 };
 
 export const createArticle = async (data) => {
-    return await API.post("/articles", data);
+    try {
+
+        return await API.post("/articles", data);
+    } catch (error) {
+        console.error("Error Creating Article:", error);
+        return null;
+    }
+};
+
+export const deleteArticle = async (data) => {
+
 };
 
 
@@ -68,8 +84,20 @@ export const getNews = async (category = "", search = "") => {
     }
 };
 
-export const saveArticle = (data) =>
-    API.post("/articles", data);
+// SAVE ARTICLE
+// export const saveArticle = async (data) => {
+//     try {
+//         const res = await API.post("/articles", data);
+//         return res.data;
+//     }
+//     catch (error) {
+//         console.error("Error Creating Article:", error);
+//         return [];
+//     }
+// };
 
-export const getSavedArticles = () =>
-    API.get("/articles");
+// export const getSavedArticles = () =>
+//     API.get("/articles");
+
+// export const deleteArticle = (id) =>
+//     API.delete(`/articles/${id}`);

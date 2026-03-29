@@ -7,6 +7,10 @@ import Register from "./components/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Articles from "./components/pages/Articles";
+import CreateArticle from "./components/pages/CreateArticle";
+
+
 
 function App() {
   return (
@@ -14,20 +18,12 @@ function App() {
       <Navbar />
 
       <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-              <ToastContainer position="top-right" autoClose={3000} />
-            </ProtectedRoute>
-          }
-        />
-
+        <Route path="/" element={<ProtectedRoute> <Dashboard /> <ToastContainer position="top-right" autoClose={3000} /> </ProtectedRoute>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
+        <Route path="/articles" element={<ProtectedRoute><Articles /></ProtectedRoute>} />
+        <Route path="/create-article" element={<ProtectedRoute>  <CreateArticle /> </ProtectedRoute>} />  </Routes>
     </Router>
   );
 }

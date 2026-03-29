@@ -1,27 +1,23 @@
 import { useEffect, useState, useCallback } from "react";
-import { getNews } from "../services/api";
-import { saveArticle } from "../services/api";
+import { getNews, createArticle } from "../services/api";
+import { toast } from "react-toastify";
 import "../App.css";
 
-function Dashboard() {
+
+function News() {
     const [articles, setArticles] = useState([]);
     const [category, setCategory] = useState("technology");
-
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // 🔥 Fetch function
     const fetchArticles = useCallback(async () => {
         setLoading(true);
 
         let data;
-
         if (search.trim()) {
-            // 🔍 Search mode → category ignore
             data = await getNews("", search);
         } else {
-            // 📂 Category mode
-            data = await getNews(category.toLowerCase(), "");
+            data = await getNews(category, "");
         }
 
         setArticles(data || []);
@@ -32,173 +28,98 @@ function Dashboard() {
         fetchArticles();
     }, [fetchArticles]);
 
+    // SAVE HANDLER FIXED
+    const handleSave = async (item) => {
+        try {
+            await createArticle(item);
+            toast.success("Article Saved!");
+        } catch (err) {
+            console.error(err);
+            toast.error(" Failed to save");
+        }
+    };
+
     return (
-        <div style={{ background: "#f5f5f5", minHeight: "100vh", padding: "30px" }}>
+        <div className="container mt-4">
 
-            {/* 🔥 Main Container */}
-            <div
-                style={{
-                    maxWidth: "1200px",
-                    margin: "auto",
-                    background: "white",
-                    padding: "20px",
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)"
-                }}
-            >
+            <h2 className="mb-3">📰 Latest News</h2>
 
-                {/* 📰 Header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h2>Latest Articles</h2>
+            {/* Search */}
+            <div className="d-flex mb-3">
+                <input
+                    className="form-control me-2"
+                    placeholder="Search..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+                <button className="btn btn-warning" onClick={fetchArticles}>
+                    Search
+                </button>
+            </div>
 
-                    {/* 🔍 Search Bar */}
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === "Enter") fetchArticles(); }}
-                            style={{
-                                padding: "8px",
-                                borderRadius: "6px",
-                                border: "1px solid #ccc",
-                                marginRight: "10px"
-                            }}
-                        />
-                        <button
-                            onClick={fetchArticles}
-                            style={{
-                                padding: "8px 12px",
-                                borderRadius: "6px",
-                                background: "#f4a742",
-                                border: "none",
-                                color: "white",
-                                cursor: "pointer"
-                            }}
-                        >
-                            Search
-                        </button>
-                    </div>
-                </div>
+            {/* Categories */}
+            <div className="mb-3">
+                {["technology", "business", "health", "sports"].map((cat) => (
+                    <button
+                        key={cat}
+                        className={`btn me-2 ${category === cat ? "btn-warning" : "btn-outline-secondary"
+                            }`}
+                        onClick={() => {
+                            setCategory(cat);
+                            setSearch("");
+                        }}
+                    >
+                        {cat}
+                    </button>
+                ))}
+            </div>
 
-                {/* 📂 Categories */}
-                <div style={{ marginTop: "15px" }}>
-                    {["all", "technology", "business", "health", "sports"].map((cat) => (
-                        <button
-                            key={cat}
-                            onClick={() => {
-                                setCategory(cat);
-                                setSearch(""); // 🔥 search clear on category click
-                            }}
-                            style={{
-                                marginRight: "10px",
-                                padding: "6px 12px",
-                                borderRadius: "20px",
-                                border: "none",
-                                cursor: "pointer",
-                                background: category === cat ? "#f4a742" : "#eee",
-                                color: category === cat ? "white" : "black"
-                            }}
-                        >
-                            {cat.toUpperCase()}
-                        </button>
-                    ))}
-                </div>
+            {/* Grid */}
+            <div className="row">
+                {loading && <p>Loading...</p>}
 
-                {/* 📰 Grid */}
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-                        gap: "20px",
-                        marginTop: "20px"
-                    }}
-                >
+                {articles.map((item, index) => (
+                    <div key={index} className="col-md-4 mb-4">
+                        <div className="card h-100 shadow-sm">
 
-                    {/* ⏳ Loading */}
-                    {loading && <p>Loading...</p>}
-
-                    {/* ❌ No Data */}
-                    {!loading && articles.length === 0 && (
-                        <p>No articles found 😢</p>
-                    )}
-
-                    {/* 📰 Cards */}
-                    {articles.map((item, index) => (
-
-                        <div
-                            key={index}
-                            className="card-hover"
-                            style={{
-                                borderRadius: "12px",
-                                overflow: "hidden",
-                                boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-                                background: "#fff"
-                            }}
-                        >
-                            {/* 🖼 Image */}
                             {item.image && (
                                 <img
                                     src={item.image}
+                                    className="card-img-top"
                                     alt="news"
-                                    style={{
-                                        width: "100%",
-                                        height: "180px",
-                                        objectFit: "cover"
-                                    }}
                                 />
                             )}
 
-                            {/* 📄 Content */}
-                            <div style={{ padding: "15px" }}>
-                                <h4 style={{ fontSize: "18px" }}>{item.title}</h4>
+                            <div className="card-body d-flex flex-column">
+                                <h5 className="card-title">{item.title}</h5>
+                                <p className="card-text">{item.description}</p>
 
-                                <p style={{ fontSize: "14px", color: "#555" }}>
-                                    {item.description}
-                                </p>
-
-                                {/* 🔥 ACTION BUTTONS ROW */}
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        marginTop: "15px"
-                                    }}
-                                >
-                                    {/* Read More */}
+                                <div className="mt-auto d-flex justify-content-between">
                                     <a
                                         href={item.url}
                                         target="_blank"
                                         rel="noreferrer"
-                                        style={{
-                                            color: "#f4a742",
-                                            textDecoration: "none",
-                                            fontWeight: "bold"
-                                        }}
+                                        className="text-warning fw-bold"
                                     >
                                         Read More →
                                     </a>
 
-                                    {/* Save Button (Styled) */}
-                                    <button style={{
-                                        className: "save-btn",
-                                        background: "transparent",
-                                        border: "none",
-                                        fontSize: "18px",
-                                        cursor: "pointer"
-                                    }}>
-                                        ⭐
+                                    {/* CLEAN BUTTON */}
+                                    <button
+                                        className="btn btn-sm btn-outline-primary"
+                                        onClick={() => handleSave(item)}
+                                    >
+                                        Save
                                     </button>
                                 </div>
                             </div>
+
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
 }
 
-export default Dashboard;
+export default News;

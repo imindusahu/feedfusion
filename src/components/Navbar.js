@@ -15,7 +15,7 @@ const Navbar = () => {
             background: "#281616",
             color: "white",
             padding: "15px",
-            boxShadow: "0 2px 10px rgba(228, 219, 219, 0.1)"
+            boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
         }}>
             <div style={{
                 maxWidth: "1200px",
@@ -24,26 +24,28 @@ const Navbar = () => {
                 justifyContent: "space-between",
                 alignItems: "center"
             }}>
-                <h3>SMART AGGREGATOR</h3>
 
-                <div>
+                {/* LOGO */}
+                <h3 style={{ margin: 0 }}>SMART AGGREGATOR</h3>
+
+                {/* LINKS */}
+                <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
                     {isLoggedIn ? (
-                        <button
-                            onClick={handleLogout}
-                            style={{
-                                padding: "8px 12px",
-                                background: "red",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "6px"
-                            }}
-                        >
-                            Logout
-                        </button>
+                        <>
+                            <Link to="/" style={linkStyle}>News</Link>
+
+                            {/* ✅ THIS IS YOUR ARTICLES PAGE LINK */}
+                            <Link to="/articles" style={linkStyle}>  Articles </Link>
+                            <Link to="/create-article" style={linkStyle}>Create Article</Link>
+
+                            <button onClick={handleLogout} style={btnStyle}>
+                                Logout
+                            </button>
+                        </>
                     ) : (
                         <>
-                            <Link to="/login" style={{ marginRight: "10px" }}>Login</Link>
-                            <Link to="/register">Register</Link>
+                            <Link to="/login" style={linkStyle}>Login</Link>
+                            <Link to="/register" style={linkStyle}>Register</Link>
                         </>
                     )}
                 </div>
@@ -52,4 +54,20 @@ const Navbar = () => {
     );
 };
 
+// ✅ Reusable link styling
+const linkStyle = {
+    color: "white",
+    textDecoration: "none",
+    fontWeight: "500"
+};
+
+// ✅ Reusable button styling
+const btnStyle = {
+    background: "#f4a742",
+    border: "none",
+    color: "white",
+    padding: "8px 12px",
+    borderRadius: "6px",
+    cursor: "pointer"
+};
 export default Navbar;
