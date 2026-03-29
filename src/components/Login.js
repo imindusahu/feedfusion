@@ -2,6 +2,7 @@ import { useState } from "react";
 import { loginUser } from "../services/api"; // ⚠️ IMPORTANT
 import { useNavigate } from "react-router-dom";
 import "../styles/auth.css";
+import { toast } from "react-toastify";
 
 const Login = () => {
     const [form, setForm] = useState({ username: "", password: "" });
@@ -16,10 +17,10 @@ const Login = () => {
         try {
             const res = await loginUser(form); // API call
             localStorage.setItem("token", res.data.access_token);
-            alert("Login successful!");
+            toast.success("Login successful!");
             navigate("/dashboard");
         } catch (err) {
-            alert(err.response?.data?.detail || "Login failed");
+            toast.error(err.response?.data?.detail || "Login failed");
         }
     };
 

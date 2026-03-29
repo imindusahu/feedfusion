@@ -2,6 +2,7 @@ import { useState } from "react";
 import { registerUser } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import "../styles/auth.css";
+import { toast } from "react-toastify";
 
 const Register = () => {
     const [form, setForm] = useState({ username: "", password: "" });
@@ -15,10 +16,10 @@ const Register = () => {
         e.preventDefault();
         try {
             const res = await registerUser(form);
-            alert(res.data.message || "Registered successfully!");
+            toast.success(res.data.message || "Registered successfully!");
             navigate("/login");
         } catch (err) {
-            alert(err.response?.data?.detail || "Registration failed");
+            toast.error(err.response?.data?.detail || "Registration failed");
         }
     };
 

@@ -5,6 +5,8 @@ import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+              <ToastContainer position="top-right" autoClose={3000} />
             </ProtectedRoute>
           }
         />
